@@ -14,6 +14,8 @@ struct barrier {
   int round;     // Barrier round
 } bstate;
 
+
+
 static void
 barrier_init(void)
 {
@@ -31,17 +33,16 @@ barrier()
   // then increment bstate.round.
   //
   pthread_mutex_lock(&bstate.barrier_mutex);
-  if(++bstate.nthread == nthread)
-  {
-    bstate.nthread = 0;
+  bstate.nthread++;
+  if(bstate.nthread == nthread){
     bstate.round += 1;
+    bstate.nthread = 0;
     pthread_cond_broadcast(&bstate.barrier_cond);
   }else{
     pthread_cond_wait(&bstate.barrier_cond,&bstate.barrier_mutex);
   }
-  
-  
   pthread_mutex_unlock(&bstate.barrier_mutex);
+  
 }
 
 static void *
